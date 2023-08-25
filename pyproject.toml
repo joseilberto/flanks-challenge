@@ -42,7 +42,7 @@ line_length = 80
 profile = "black"
 
 [tool.mypy]
-follow_imports_silent = true
+enable_incomplete_feature = "Unpack"
 show_column_numbers = true
 strict = true
 

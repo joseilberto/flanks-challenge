@@ -2,10 +2,15 @@
 
 import asyncio
 import logging
+from typing import Optional, TypeAlias, no_type_check
 
 import motor.motor_asyncio as motor
+from motor import core
 
 from config import MONGO_HOST, MONGO_PORT
+
+ClientAlias: TypeAlias = core.AgnosticClient
+DatabaseAlias: TypeAlias = core.AgnosticDatabase
 
 
 class MongoConnector:
@@ -24,7 +29,7 @@ class MongoConnector:
             self.mongo_host,
             self.mongo_port,
         )
-        self.client = None
+        self.client: Optional[ClientAlias] = None
 
     def _initialise_client(self) -> None:
         """
@@ -38,17 +43,19 @@ class MongoConnector:
         )
 
         loop = asyncio.get_event_loop()
+        assert loop.is_running()  # Check if we are running in an async loop
 
         uri = f"mongodb://{self.mongo_host}:{self.mongo_port}"
         self.client = motor.AsyncIOMotorClient(uri, io_loop=loop)
 
-    def conn(self) -> motor.AsyncIOMotorClient:
+    def conn(self) -> Optional[ClientAlias]:
         """Get the instantiated client"""
         if self.client is None:
             self._initialise_client()
 
         return self.client
 
-    def get_db(self, database_name: str) -> motor.AsyncIOMotorDatabase:
+    @no_type_check
+    def get_db(self, database_name: str) -> DatabaseAlias:
         """Get a particular database"""
         return self.conn()[database_name]

@@ -1,19 +1,21 @@
 """Define base mongo client class with basic connection methods"""
 import logging
 from datetime import datetime
-from typing import Dict, Optional, TypedDict, Union
+from typing import Any, Dict, Optional, TypeAlias, TypedDict, Union
 
-import motor.motor_asyncio as motor
+from motor import core
 
 from .mongo_conn import MongoConnector
+
+CollectionAlias: TypeAlias = core.AgnosticCollection
 
 
 class ClientParams(TypedDict):
     """TypeDict for the MongoClientBase params"""
 
     db_name: str
+    collection: str
     connector: Optional[MongoConnector]
-    collection: Optional[str]
 
 
 class MongoClientBase:
@@ -22,8 +24,8 @@ class MongoClientBase:
     def __init__(
         self,
         db_name: str,
+        collection: str,
         connector: Optional[MongoConnector] = None,
-        collection: Optional[str] = None,
     ) -> None:
         """Initialise mongo client"""
         self.db_name = db_name
@@ -39,14 +41,14 @@ class MongoClientBase:
             self.collection,
         )
 
-    def get_collection(self) -> motor.AsyncIOMotorCollection:
+    def get_collection(self) -> Union[Any, CollectionAlias]:
         """Helper to access db and collection specified"""
         return self.connector.get_db(self.db_name)[self.collection]
 
     async def get_n_docs(
         self,
         query: Optional[Dict[str, Union[str, datetime, float, int]]] = None,
-    ) -> int:
+    ) -> Union[int, Any]:
         """Count the number of docs in the collection"""
         if query is None:
             query = {}
