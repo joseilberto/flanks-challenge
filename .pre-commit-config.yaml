@@ -20,9 +20,7 @@ repos:
       name: pylint
       entry: pylint
       language: system
-      types: [python]
-      args:
-      - --rcfile=.pylintrc
+      types: [python]      
     - id: isort
       name: isort
       entry: isort
