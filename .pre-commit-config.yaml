@@ -21,6 +21,12 @@ repos:
       entry: pylint
       language: system
       types: [python]      
+    - id: mypy
+      name: mypy
+      entry: mypy
+      language: system
+      types: [python]
+      exclude: tests/
     - id: isort
       name: isort
       entry: isort
