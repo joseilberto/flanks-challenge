@@ -22,7 +22,7 @@ ATTEMPTS = int(os.getenv("ATTEMPTS", "3"))
 ATTEMPT_WAIT = int(os.getenv("ATTEMPT_WAIT", "5"))
 
 # Delay between the request for each page
-DELAY = int(os.getenv("DELAY", "2"))
+DELAY = int(os.getenv("DELAY", "1"))
 
 # Mongo connection information
 MONGO_HOST = os.getenv("MONGO_HOST", "localhost")

@@ -9,9 +9,9 @@ from urllib.parse import urljoin, urlparse
 
 import aiohttp
 from bs4 import BeautifulSoup
-from bs4.element import NavigableString, Tag
+from bs4.element import Tag
 
-from config import INITIAL_URL
+from config import ATTEMPT_WAIT, ATTEMPTS, DELAY, INITIAL_URL
 from mongo import DataClient
 
 from .pipelines import DataTypes, MongoDataPipeLine
@@ -46,12 +46,13 @@ class CNMVCrawler:
         self,
         url: str,
         session: aiohttp.ClientSession,
-        attempts: int = 3,
+        attempts: int = ATTEMPTS,
     ) -> ContentTypes:
         """
         Getting the pagination and list of needed urls that are going to be
         crawled all the elements.
         """
+        self.log.info("Crawling pagination page: %s", url)
         async with session.get(url) as response:
             attempt = 1
             while attempt < attempts:
@@ -60,7 +61,7 @@ class CNMVCrawler:
                     msg = f"Failed request to {url} with code {response.status}"
                     self.log.warning(msg)
                     attempt += 1
-                    await asyncio.sleep(2)
+                    await asyncio.sleep(ATTEMPT_WAIT)
                     continue
 
                 # Get the html content and create a soup parser
@@ -72,11 +73,13 @@ class CNMVCrawler:
                 urls = self._get_all_urls(soup)
                 if next_page is None and not urls:
                     return ContentTypes()
-                if next_page is not None and not urls:
-                    return ContentTypes(next_page=next_page)
-                if next_page is not None and urls:
-                    break
-        return ContentTypes(next_page, urls)
+                if next_page is not None:
+                    return ContentTypes(next_page=next_page, urls=urls)
+        if attempt == attempts:
+            self.log.error(
+                "Tried %s times to fetch %s with no success", attempts, url
+            )
+        return ContentTypes()
 
     def _get_next_page(self, soup: BeautifulSoup) -> str:
         """
@@ -115,7 +118,7 @@ class CNMVCrawler:
 
         # Find the next element and validate the url on it
         next_page = current_page.parent.findNext("a")
-        if next_page is not None:
+        if next_page is not None and isinstance(next_page, Tag):
             return self._validate_next_page_url(next_page)
 
         return ""
@@ -155,9 +158,7 @@ class CNMVCrawler:
             return []
         return self._validate_url_elements(url_elements)
 
-    def _validate_next_page_url(
-        self, element: Union[Tag, NavigableString]
-    ) -> str:
+    def _validate_next_page_url(self, element: Tag) -> str:
         """
         Validate the url for the next page.
         We ignore if the title indicates that we reached the last page.
@@ -210,24 +211,51 @@ class CNMVCrawler:
         return validated
 
     async def _get_transformed_results(
-        self, urls: List[str]
+        self, urls: List[str], session: aiohttp.ClientSession
     ) -> List[DataTypes]:
-        # pylint: disable=unused-argument
         """
-        Get the results of each url and transform them using the data pipeline
+        Get the transformed results of each url
         """
-        return []
+        coros = [
+            asyncio.create_task(self._crawl_process_page(url, session))
+            for url in urls
+        ]
+        results = await asyncio.gather(*coros)
 
-    async def crawl_and_transform(
-        self, url: str, session: aiohttp.ClientSession
-    ) -> Tuple[List[DataTypes], ContentTypes]:
+        return [result for result in results if result is not None]
+
+    async def _crawl_process_page(
+        self,
+        url: str,
+        session: aiohttp.ClientSession,
+        attempts: int = ATTEMPTS,
+    ) -> Optional[DataTypes]:
         """
-        Crawl a listing page in the pagination extracting and transforming the
-        data
+        Crawl the process getting the required data
         """
-        content = await self._get_list_content(url, session)
-        transformed = await self._get_transformed_results(content.urls)
-        return transformed, content
+        self.log.info("Crawling: %s", url)
+        attempt = 1
+        while attempt < attempts:
+            async with session.get(url) as response:
+                # Check the response status first and retry
+                if response.status != 200:
+                    msg = f"Failed request to {url} with code {response.status}"
+                    self.log.warning(msg)
+                    attempt += 1
+                    await asyncio.sleep(ATTEMPT_WAIT)
+                    continue
+
+                # Get the html content and create a soup parser
+                html = await response.text()
+                soup = BeautifulSoup(html, "html.parser")
+
+                # Extract and trasform the results with the data pipeline
+                return await self.data_pipeline.extract_and_transform(url, soup)
+        if attempt == attempts:
+            self.log.error(
+                "Tried %s times to fetch %s with no success", attempts, url
+            )
+        return None
 
     async def crawl_and_save(self) -> None:
         """
@@ -243,6 +271,18 @@ class CNMVCrawler:
                 next_page = content.next_page
                 if not next_page:
                     break
+                await asyncio.sleep(DELAY)
+
+    async def crawl_and_transform(
+        self, url: str, session: aiohttp.ClientSession
+    ) -> Tuple[List[DataTypes], ContentTypes]:
+        """
+        Crawl a listing page in the pagination extracting and transforming the
+        data
+        """
+        content = await self._get_list_content(url, session)
+        transformed = await self._get_transformed_results(content.urls, session)
+        return transformed, content
 
     async def save_results(self, results: List[DataTypes]) -> bool:
         """

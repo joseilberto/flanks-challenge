@@ -2,7 +2,7 @@
 
 import logging
 from datetime import datetime
-from typing import Any, List, Union, Unpack
+from typing import List, Unpack
 
 from pymongo import ASCENDING
 from pymongo.operations import IndexModel
@@ -27,15 +27,24 @@ class MongoDataClient(MongoClientBase):
             self.collection,
         )
 
-    async def set_index(self) -> Union[Any, List[str]]:
+    async def set_index(self) -> List[str]:
         """Set indexes in mongo collection"""
         index = IndexModel(
-            [("nombre", ASCENDING), ("numero_registro", ASCENDING)],
+            [
+                ("nombre", ASCENDING),
+                ("numero_registro", ASCENDING),
+                ("isin", ASCENDING),
+                ("fecha_registro", ASCENDING),
+            ],
             background=True,
         )
         result = await self.get_collection().create_indexes([index])
-        self.log.debug("Set indexes")
-        return result
+        if isinstance(result, list):
+            self.log.debug("Set indexes")
+            return result
+        msg = f"Couldn't set indexes, got the following result: {result}"
+        self.log.error(msg)
+        raise ValueError(msg)
 
     async def set_data(self, result: DataTypes) -> bool:
         """
@@ -51,7 +60,9 @@ class MongoDataClient(MongoClientBase):
         data = {"write_date": datetime.now(), **result._asdict()}
         self.log.debug("Setting data for dictionary: %s", data)
 
-        success = await self.get_collection().update_one(query, data)
+        success = await self.get_collection().update_one(
+            query, {"$set": data}, upsert=True
+        )
 
         self.log.info(
             "Data set for %s with numero_registro: %s",
