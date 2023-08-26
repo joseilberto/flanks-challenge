@@ -16,6 +16,14 @@ INITIAL_URL: str = urlparse(
     )
 ).geturl()
 
+# Number of retries if we fail to fetch a page and the time we should wait
+# to request the same page again
+ATTEMPTS = int(os.getenv("ATTEMPTS", "3"))
+ATTEMPT_WAIT = int(os.getenv("ATTEMPT_WAIT", "5"))
+
+# Delay between the request for each page
+DELAY = int(os.getenv("DELAY", "2"))
+
 # Mongo connection information
 MONGO_HOST = os.getenv("MONGO_HOST", "localhost")
 MONGO_PORT = os.getenv("MONGO_PORT", "27017")
