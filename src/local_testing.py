@@ -18,7 +18,8 @@ def main() -> None:
     data_pipeline = DataPipeline(MongoDataTypes)
     crawler = CNMVCrawler(mongo_client=data_client, data_pipeline=data_pipeline)
     loop = asyncio.get_event_loop()
-    loop.run_until_complete(crawler.crawl())
+    loop.run_until_complete(data_client.set_index())
+    loop.run_until_complete(crawler.crawl_and_save())
     loop.close()
 
 

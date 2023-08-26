@@ -9,7 +9,7 @@ from urllib.parse import urlparse
 # Configuring the initial url the crawler uses and perform requests from this
 # url onwards. We validate it with urlparse, we would like to break it as soon
 # as possible if the url is not valid.
-INITIAL_URL = urlparse(
+INITIAL_URL: str = urlparse(
     os.getenv(
         "INITIAL_URL",
         "https://www.cnmv.es/Portal/Consultas/MostrarListados.aspx?id=18",
