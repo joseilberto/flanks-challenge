@@ -24,7 +24,7 @@ class DataTypes(NamedTuple):
     fecha_ultimo_folleto: datetime
 
 
-ths = {
+THS = {
     "numero_registro": "Nº Registro oficial",
     "fecha_registro": "Fecha registro oficial",
     "domicilio": "Domicilio",
@@ -47,7 +47,7 @@ def process_capital(capital: str) -> float:
         return locale.atof(capital)
 
 
-mapping: Dict[str, Callable[[str], Union[str, float, datetime]]] = {
+MAPPING: Dict[str, Callable[[str], Union[str, float, datetime]]] = {
     "nombre": str,
     "numero_registro": str,
     "fecha_registro": lambda x: datetime.strptime(x, r"%d/%m/%Y"),
@@ -60,12 +60,16 @@ mapping: Dict[str, Callable[[str], Union[str, float, datetime]]] = {
 
 
 class MongoDataPipeLine:
-    # pylint: disable=too-few-public-methods,unused-argument
     """Data pipeline to transform the raw data into mongo types"""
 
-    def __init__(self, fields: DataTypes) -> None:
+    def __init__(
+        self,
+        mapping_functions: Dict[
+            str, Callable[[str], Union[str, float, datetime]]
+        ],
+    ) -> None:
         """Initialising the variables in our pipeline"""
-        self.fields = fields._asdict
+        self.mapping_functions = mapping_functions
 
         self.log = logging.getLogger(__name__)
 
@@ -126,7 +130,7 @@ class MongoDataPipeLine:
     ) -> Dict[str, Union[str, float, datetime]]:
         """Get all elements in the data table"""
         result = {}
-        for field, th_class in ths.items():
+        for field, th_class in THS.items():
             # Get the current element in the table
             element = data_table.find("td", {"data-th": th_class})
             if not isinstance(element, Tag):
@@ -146,8 +150,8 @@ class MongoDataPipeLine:
                     )
                     self.log.error(msg)
                     raise ValueError(msg)
-                result[field] = mapping[field](isin.text)
+                result[field] = self.mapping_functions[field](isin.text)
                 continue
             # Process elements
-            result[field] = mapping[field](element.text)
+            result[field] = self.mapping_functions[field](element.text)
         return result

@@ -55,6 +55,8 @@ class MongoDataClient(MongoClientBase):
         query = {
             "nombre": result.nombre,
             "numero_registro": result.numero_registro,
+            "fecha_registro": result.fecha_registro,
+            "isin": result.isin,
         }
         # Set up and save the data
         data = {"write_date": datetime.now(), **result._asdict()}
