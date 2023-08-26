@@ -32,6 +32,6 @@ Te pedimos que nos entregues un repositorio de código privado que contenga:
 El sistema debe asumir que el contenedor de actualización se ejecutará diariamente para que otros sistemas tengan a su disposición la información actualizada. Debes crear también una API para consultar los datos, que permita:
 
 - Listar las SICAVs filtradas por fecha de creación, por el número de registro, ISIN y nombre.
-- Acceso a todos los datos de una SICAV por su ISIN. Al acceder este endpoint deberá devolver la información actual y un listado de cambios observados y la fecha en quese han observado. El domicilio, capitales y fecha de último folleto pueden cambiar entre extracción y extracción.
+- Acceso a todos los datos de una SICAV por su ISIN. Al acceder este endpoint deberá devolver la información actual y un listado de cambios observados y la fecha en que se han observado. El domicilio, capitales y fecha de último folleto pueden cambiar entre extracción y extracción.
 
 El software debe estar escrito en python y los datos persistidos en MongoDB. Con el objetivo de facilitar la evaluación de la prueba es necesario el uso también de Docker y Docker-compose.
