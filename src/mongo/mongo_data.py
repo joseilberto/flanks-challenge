@@ -1,10 +1,13 @@
 """Mongo Client used to read and write data into the database"""
 
 import logging
+from datetime import datetime
 from typing import Any, List, Union, Unpack
 
 from pymongo import ASCENDING
 from pymongo.operations import IndexModel
+
+from crawler.pipelines import DataTypes
 
 from .mongo_client_base import ClientParams, MongoClientBase
 
@@ -33,3 +36,27 @@ class MongoDataClient(MongoClientBase):
         result = await self.get_collection().create_indexes([index])
         self.log.debug("Set indexes")
         return result
+
+    async def set_data(self, result: DataTypes) -> bool:
+        """
+        Set the data for a particular entry
+        """
+        assert isinstance(result, DataTypes)
+
+        query = {
+            "nombre": result.nombre,
+            "numero_registro": result.numero_registro,
+        }
+        # Set up and save the data
+        data = {"write_date": datetime.now(), **result._asdict()}
+        self.log.debug("Setting data for dictionary: %s", data)
+
+        success = await self.get_collection().update_one(query, data)
+
+        self.log.info(
+            "Data set for %s with numero_registro: %s",
+            query["nombre"],
+            query["numero_registro"],
+        )
+
+        return success.acknowledged
