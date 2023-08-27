@@ -12,9 +12,7 @@ from mongo import DataClient
 @no_type_check
 def main() -> None:
     """Main method"""
-    data_client = DataClient(
-        db_name="CNMV", collection="cnmv_data", connector=None
-    )
+    data_client = DataClient(db_name="CNMV")
     data_pipeline = DataPipeline(MAPPING)
     crawler = CNMVCrawler(mongo_client=data_client, data_pipeline=data_pipeline)
     loop = asyncio.get_event_loop()

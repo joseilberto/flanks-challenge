@@ -24,7 +24,7 @@ class MongoClientBase:
     def __init__(
         self,
         db_name: str,
-        collection: str,
+        collection: Optional[str] = None,
         connector: Optional[MongoConnector] = None,
     ) -> None:
         """Initialise mongo client"""
