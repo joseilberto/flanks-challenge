@@ -38,6 +38,9 @@ build-backend = "poetry.core.masonry.api"
 line-length = 80
 preview = true
 
+[tool.pylint.SIMILARITIES]
+min-similarity-lines = 10
+
 [tool.isort]
 line_length = 80
 profile = "black"

@@ -16,12 +16,12 @@ class DataTypes(NamedTuple):
 
     nombre: str
     numero_registro: str
-    fecha_registro: datetime
+    fecha_registro: str
     isin: str
     domicilio: str
     capital_inicial: float
     capital_maximo: float
-    fecha_ultimo_folleto: datetime
+    fecha_ultimo_folleto: str
 
 
 THS = {
@@ -50,12 +50,16 @@ def process_capital(capital: str) -> float:
 MAPPING: Dict[str, Callable[[str], Union[str, float, datetime]]] = {
     "nombre": str,
     "numero_registro": str,
-    "fecha_registro": lambda x: datetime.strptime(x, r"%d/%m/%Y"),
+    "fecha_registro": lambda x: datetime.strptime(x, r"%d/%m/%Y").strftime(
+        "%Y-%m-%d"
+    ),
     "isin": str,
     "domicilio": str,
     "capital_inicial": process_capital,
     "capital_maximo": process_capital,
-    "fecha_ultimo_folleto": lambda x: datetime.strptime(x, r"%d/%m/%Y"),
+    "fecha_ultimo_folleto": lambda x: datetime.strptime(
+        x, r"%d/%m/%Y"
+    ).strftime("%Y-%m-%d"),
 }
 
 
