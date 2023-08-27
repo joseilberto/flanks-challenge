@@ -166,10 +166,6 @@ class CNMVCrawler:
             if title is not None and "Ir a la última página" in title:
                 self.log.info("Reached the last page")
                 return ""
-        else:
-            msg = f"Not able to validate element of type {type(element)}"
-            self.log.error(msg)
-            raise NotImplementedError(msg)
 
         # Validate the url element
         try:

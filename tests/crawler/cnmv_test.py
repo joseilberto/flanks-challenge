@@ -49,8 +49,7 @@ async def mock_listing_request(*args, **kwargs):
     yield MockResponse(SAMPLE_FILES["success_list_page"])
 
 
-@pytest.mark.asyncio
-async def test_get_next_page(cnmv_crawler: CNMVCrawler) -> None:
+def test_get_next_page(cnmv_crawler: CNMVCrawler) -> None:
     """Test the _get_next_page method"""
     # Test a listing page without the maincontent section
     soup = BeautifulSoup(SAMPLE_FILES["empty_list_page"], "html.parser")
@@ -80,8 +79,7 @@ async def test_get_next_page(cnmv_crawler: CNMVCrawler) -> None:
     assert next_page == "Next Page"
 
 
-@pytest.mark.asyncio
-async def test_get_all_urls(cnmv_crawler: CNMVCrawler) -> None:
+def test_get_all_urls(cnmv_crawler: CNMVCrawler) -> None:
     """Test the _get_next_page method"""
     # Test a listing page without the maincontent section
     soup = BeautifulSoup(SAMPLE_FILES["empty_list_page"], "html.parser")
@@ -99,6 +97,21 @@ async def test_get_all_urls(cnmv_crawler: CNMVCrawler) -> None:
     )
     urls = cnmv_crawler._get_all_urls(soup)
     assert urls == []
+
+
+def test_validate_next_page_url(cnmv_crawler: CNMVCrawler) -> None:
+    """Test the _validate_next_page_url method"""
+    # Check if it is the last page tag
+    soup = BeautifulSoup("<b></b>", "html.parser")
+    tag = soup.new_tag("a", title="Ir a la última página")
+    next_page = cnmv_crawler._validate_next_page_url(tag)
+    assert next_page == ""
+
+    # Check for next page without a link
+    soup = BeautifulSoup("<b></b>", "html.parser")
+    tag = soup.new_tag("a", title="1")
+    next_page = cnmv_crawler._validate_next_page_url(tag)
+    assert next_page == ""
 
 
 @pytest.mark.asyncio
