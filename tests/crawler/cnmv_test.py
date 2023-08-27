@@ -114,6 +114,15 @@ def test_validate_next_page_url(cnmv_crawler: CNMVCrawler) -> None:
     assert next_page == ""
 
 
+def test_validate_url_elements(cnmv_crawler: CNMVCrawler) -> None:
+    """Test the _validate_url_elements method"""
+    # Check if href is not present in a tag
+    soup = BeautifulSoup("<b></b>", "html.parser")
+    tag = soup.new_tag("a", title="1")
+    urls = cnmv_crawler._validate_url_elements([tag])
+    assert urls == []
+
+
 @pytest.mark.asyncio
 async def test_get_list_content(
     monkeypatch: pytest.MonkeyPatch, cnmv_crawler: CNMVCrawler
