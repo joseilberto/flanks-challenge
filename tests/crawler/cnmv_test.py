@@ -52,6 +52,29 @@ async def mock_listing_request(*args, **kwargs):
 @pytest.mark.asyncio
 async def test_get_next_page(cnmv_crawler: CNMVCrawler) -> None:
     """Test the _get_next_page method"""
+    # Test a listing page without the maincontent section
+    soup = BeautifulSoup(SAMPLE_FILES["empty_list_page"], "html.parser")
+    next_page = cnmv_crawler._get_next_page(soup)
+    assert next_page == ""
+
+    # Test a listing page without the pagination ul
+    soup = BeautifulSoup(SAMPLE_FILES["no_pagination_list_page"], "html.parser")
+    next_page = cnmv_crawler._get_next_page(soup)
+    assert next_page == ""
+
+    # Test a listing page without the current page
+    soup = BeautifulSoup(
+        SAMPLE_FILES["no_current_page_list_page"], "html.parser"
+    )
+    next_page = cnmv_crawler._get_next_page(soup)
+    assert next_page == ""
+
+    # Test a listing page without the next page a element
+    soup = BeautifulSoup(SAMPLE_FILES["no_next_page_list_page"], "html.parser")
+    next_page = cnmv_crawler._get_next_page(soup)
+    assert next_page == ""
+
+    # Test a successful listing page for the next page
     soup = BeautifulSoup(SAMPLE_FILES["success_list_page"], "html.parser")
     next_page = cnmv_crawler._get_next_page(soup)
     assert next_page == "Next Page"

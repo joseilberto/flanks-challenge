@@ -17,6 +17,15 @@ sample_test_folder = Path(__file__).resolve().parent / "test_sample_data"
 sample_files = {
     "success_list_page": sample_test_folder / "list_page.html",
     "empty_list_page": sample_test_folder / "list_page_empty.html",
+    "no_pagination_list_page": (
+        sample_test_folder / "list_page_no_pagination.html"
+    ),
+    "no_current_page_list_page": (
+        sample_test_folder / "list_page_no_current_page.html"
+    ),
+    "no_next_page_list_page": (
+        sample_test_folder / "list_page_no_next_page.html"
+    ),
     "success_entry1": sample_test_folder / "entry1.html",
     "success_entry2": sample_test_folder / "entry2.html",
 }
