@@ -2,5 +2,5 @@
 
 import sys
 
-sys.path.append("service/")
+sys.path.append("src/")
 sys.path.append("tests/")

@@ -1,21 +1,13 @@
 """Global tests configuration and fixtures"""
 
-import os
+import asyncio
 
 import pytest
 
 from src.mongo import DataClient
 from src.mongo.mongo_conn import MongoConnector
 
-from .test_utils import (
-    ATTEMPT_WAIT,
-    ATTEMPTS,
-    DB_NAME,
-    DELAY,
-    INITIAL_URL,
-    MONGO_HOST,
-    MONGO_PORT,
-)
+from .test_utils import DB_NAME, MONGO_HOST, MONGO_PORT
 
 
 @pytest.fixture(scope="session")
@@ -26,18 +18,9 @@ def mongo_connector() -> MongoConnector:
 
 # pylint: disable=redefined-outer-name
 @pytest.fixture(scope="session")
-async def data_client(mongo_connector: MongoConnector) -> DataClient:
+def data_client(mongo_connector: MongoConnector) -> DataClient:
     """Make a DataClient fixture"""
     client = DataClient(db_name=DB_NAME, connector=mongo_connector)
-    await client.set_index()
+    loop = asyncio.get_event_loop()
+    loop.run_until_complete(client.set_index())
     return client
-
-
-def generate_env_variables():
-    """Set up env variables for our tests"""
-    os.environ["INITIAL_URL"] = INITIAL_URL
-    os.environ["ATTEMPTS"] = ATTEMPTS
-    os.environ["ATTEMPT_WAIT"] = ATTEMPT_WAIT
-    os.environ["DELAY"] = DELAY
-    os.environ["MONGO_HOST"] = MONGO_HOST
-    os.environ["MONGO_PORT"] = MONGO_PORT
