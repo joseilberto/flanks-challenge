@@ -19,15 +19,15 @@ class DocumentType(TypedDict):
 
     nombre: str
     numero_registro: str
-    fecha_registro: datetime
+    fecha_registro: str
     isin: str
     domicilio: str
     capital_inicial: float
     capital_maximo: float
-    fecha_ultimo_folleto: datetime
+    fecha_ultimo_folleto: str
     last_update: str
     write_date: datetime
-    updates: Dict[str, Dict[str, Union[str, float, datetime]]]
+    updates: Dict[str, Dict[str, Union[str, float]]]
 
 
 class MongoDataClient(MongoClientBase):
