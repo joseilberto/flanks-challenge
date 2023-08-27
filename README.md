@@ -1,3 +1,5 @@
+[![cov](https://github.com/joseilberto/flanks-challenge/blob/main/coverage.svg)](https://github.com/joseilberto/flanks-challenge/actions)
+
 # FLANKS – Prueba Técnica 2023
 
 En esta prueba queremos evaluar principalmente dos cosas:
