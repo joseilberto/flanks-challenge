@@ -71,10 +71,7 @@ class CNMVCrawler:
                 # Extract the next page and all urls
                 next_page = self._get_next_page(soup)
                 urls = self._get_all_urls(soup)
-                if next_page is None and not urls:
-                    return ContentTypes()
-                if next_page is not None:
-                    return ContentTypes(next_page=next_page, urls=urls)
+                return ContentTypes(next_page, urls)
         if attempt == attempts:
             self.log.error(
                 "Tried %s times to fetch %s with no success", attempts, url
