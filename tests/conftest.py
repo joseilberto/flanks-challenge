@@ -26,9 +26,11 @@ def mongo_connector() -> MongoConnector:
 
 # pylint: disable=redefined-outer-name
 @pytest.fixture(scope="session")
-def data_client(mongo_connector: MongoConnector) -> DataClient:
+async def data_client(mongo_connector: MongoConnector) -> DataClient:
     """Make a DataClient fixture"""
-    return DataClient(db_name=DB_NAME, connector=mongo_connector)
+    client = DataClient(db_name=DB_NAME, connector=mongo_connector)
+    await client.set_index()
+    return client
 
 
 def generate_env_variables():
