@@ -81,6 +81,27 @@ async def test_get_next_page(cnmv_crawler: CNMVCrawler) -> None:
 
 
 @pytest.mark.asyncio
+async def test_get_all_urls(cnmv_crawler: CNMVCrawler) -> None:
+    """Test the _get_next_page method"""
+    # Test a listing page without the maincontent section
+    soup = BeautifulSoup(SAMPLE_FILES["empty_list_page"], "html.parser")
+    urls = cnmv_crawler._get_all_urls(soup)
+    assert urls == []
+
+    # Test a listing page without the url list
+    soup = BeautifulSoup(SAMPLE_FILES["no_urls_list_list_page"], "html.parser")
+    urls = cnmv_crawler._get_all_urls(soup)
+    assert urls == []
+
+    # Test a listing page without urls in the urls list
+    soup = BeautifulSoup(
+        SAMPLE_FILES["empty_urls_list_list_page"], "html.parser"
+    )
+    urls = cnmv_crawler._get_all_urls(soup)
+    assert urls == []
+
+
+@pytest.mark.asyncio
 async def test_get_list_content(
     monkeypatch: pytest.MonkeyPatch, cnmv_crawler: CNMVCrawler
 ) -> None:

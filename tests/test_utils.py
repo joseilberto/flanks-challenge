@@ -26,6 +26,12 @@ sample_files = {
     "no_next_page_list_page": (
         sample_test_folder / "list_page_no_next_page.html"
     ),
+    "no_urls_list_list_page": (
+        sample_test_folder / "list_page_no_urls_list.html"
+    ),
+    "empty_urls_list_list_page": (
+        sample_test_folder / "list_page_empty_urls_list.html"
+    ),
     "success_entry1": sample_test_folder / "entry1.html",
     "success_entry2": sample_test_folder / "entry2.html",
 }
