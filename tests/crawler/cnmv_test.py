@@ -88,6 +88,12 @@ async def mock_transformed_results(*args, **kwargs):
     return [ENTRY_PAGE1, ENTRY_PAGE1]
 
 
+async def mock_crawl_and_transform(*args, **kwargs):
+    # pylint: disable=unused-argument
+    """Mock the behaviour of the crawl_and_transform method"""
+    return [ENTRY_PAGE1, ENTRY_PAGE2], ContentTypes()
+
+
 def test_get_next_page(cnmv_crawler: CNMVCrawler) -> None:
     """Test the _get_next_page method"""
     # Test a listing page without the maincontent section
@@ -250,3 +256,14 @@ async def test_save_results(cnmv_crawler: CNMVCrawler) -> None:
     """Test the save_results method inside the crawler"""
     saved = await cnmv_crawler.save_results([ENTRY_PAGE1, ENTRY_PAGE2])
     assert saved is True
+
+
+@pytest.mark.asyncio
+async def test_crawl_and_save(
+    monkeypatch: pytest.MonkeyPatch, cnmv_crawler: CNMVCrawler
+) -> None:
+    """Test the crawl_and_save method inside the crawler"""
+    monkeypatch.setattr(
+        cnmv_crawler, "crawl_and_transform", mock_crawl_and_transform
+    )
+    await cnmv_crawler.crawl_and_save()
