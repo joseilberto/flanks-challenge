@@ -9,11 +9,10 @@ from bs4 import BeautifulSoup
 
 from src.crawler.cnmv import CNMVCrawler, ContentTypes
 from src.crawler.pipelines import DataTypes
-from tests.test_utils import ATTEMPTS, INITIAL_URL, SAMPLE_FILES
+from tests.test_utils import ATTEMPTS, ENTRY_PAGE1, INITIAL_URL, SAMPLE_FILES
+
 
 # pylint: disable=protected-access
-
-
 class MockResponse:
     # pylint: disable=too-few-public-methods
     """MockResponse class to mock a response from a page"""
@@ -63,6 +62,24 @@ async def mock_listing_request(*args, **kwargs):
     # pylint: disable=unused-argument
     """Mock a successful request to the listing page"""
     yield MockResponse(SAMPLE_FILES["success_list_page"])
+
+
+async def mock_get_list_content(*args, **kwargs):
+    # pylint: disable=unused-argument
+    """Mock the behaviour of the _get_list_content page"""
+    return ContentTypes(
+        "Next Page",
+        [
+            "https://localhost/test_url/process_page1",
+            "https://localhost/test_url/process_page2",
+        ],
+    )
+
+
+async def mock_transformed_results(*args, **kwargs):
+    # pylint: disable=unused-argument
+    """Mock the behaviour of the _get_list_content page"""
+    return [ENTRY_PAGE1, ENTRY_PAGE1]
 
 
 def test_get_next_page(cnmv_crawler: CNMVCrawler) -> None:
@@ -198,14 +215,25 @@ async def test_get_transformed_results(
             urls, session
         )
         assert len(results) == 2
-        expected: DataTypes = DataTypes(
-            "SICAV TEST",
-            "1",
-            "2000-01-01",
-            "ES0000000000",
-            "Calle TEST, 20",
-            1000000.0,
-            10000000.0,
-            "2023-01-01",
+        assert results[0] == results[1] == ENTRY_PAGE1
+
+
+@pytest.mark.asyncio
+async def test_crawl_and_transform(
+    monkeypatch: pytest.MonkeyPatch, cnmv_crawler: CNMVCrawler
+) -> None:
+    """Test the crawl_and_transform method inside the crawler"""
+    async with aiohttp.ClientSession() as session:
+        # Mock a successful request with next page and urls
+        monkeypatch.setattr(
+            cnmv_crawler, "_get_list_content", mock_get_list_content
         )
-        assert results[0] == results[1] == expected
+        monkeypatch.setattr(
+            cnmv_crawler, "_get_transformed_results", mock_transformed_results
+        )
+        transformed, content = await cnmv_crawler.crawl_and_transform(
+            INITIAL_URL, session
+        )
+
+        assert transformed == await mock_transformed_results()
+        assert content == await mock_get_list_content()

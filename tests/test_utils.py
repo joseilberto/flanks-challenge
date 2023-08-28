@@ -3,6 +3,8 @@
 import codecs
 from pathlib import Path
 
+from src.crawler.pipelines import DataTypes
+
 # Here are some variables we need
 ATTEMPTS = "3"
 ATTEMPT_WAIT = "0"
@@ -12,6 +14,18 @@ INITIAL_URL = "https://localhost/test_url/"
 MONGO_HOST = "127.0.0.1"
 MONGO_PORT = "27017"
 TEST_CRAWLER = "CNMV"
+
+# Define the results of the first entry page
+ENTRY_PAGE1 = DataTypes(
+    "SICAV TEST",
+    "1",
+    "2000-01-01",
+    "ES0000000000",
+    "Calle TEST, 20",
+    1000000.0,
+    10000000.0,
+    "2023-01-01",
+)
 
 sample_test_folder = Path(__file__).resolve().parent / "test_sample_data"
 sample_files = {
