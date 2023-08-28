@@ -3,6 +3,7 @@
 import codecs
 from pathlib import Path
 
+# pylint: disable=import-error
 from crawler.pipelines import DataTypes
 
 # Here are some variables we need
@@ -60,6 +61,7 @@ sample_files = {
     ),
     "success_entry1": sample_test_folder / "entry1.html",
     "success_entry2": sample_test_folder / "entry2.html",
+    "empty_entry1": sample_test_folder / "entry1_no_tablaDatos.html",
 }
 
 SAMPLE_FILES = {}
