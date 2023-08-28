@@ -70,15 +70,19 @@ class MongoDataClient(MongoClientBase):
         document: Optional[DocumentType] = await self.get_collection().find_one(
             query, proj
         )
-        if document is None:
-            return None
         return document
 
     async def set_data(self, result: DataTypes) -> bool:
         """
         Set the data for a particular entry
         """
-        assert isinstance(result, DataTypes)
+        if not isinstance(result, DataTypes):
+            msg = (
+                f"Expected result to be DataTypes, found {type(result)} for"
+                f" {result}"
+            )
+            self.log.error(msg)
+            return False
 
         query = {
             "nombre": result.nombre,

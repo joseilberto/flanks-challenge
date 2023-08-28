@@ -3,7 +3,7 @@
 import codecs
 from pathlib import Path
 
-from src.crawler.pipelines import DataTypes
+from crawler.pipelines import DataTypes
 
 # Here are some variables we need
 ATTEMPTS = "3"
@@ -25,6 +25,18 @@ ENTRY_PAGE1 = DataTypes(
     1000000.0,
     10000000.0,
     "2023-01-01",
+)
+
+# Define the results of the second entry page
+ENTRY_PAGE2 = DataTypes(
+    "SICAV TEST2",
+    "2",
+    "2010-01-01",
+    "ES0000000100",
+    "Calle TEST2, 10",
+    1000000.0,
+    10000000.0,
+    "2020-01-01",
 )
 
 sample_test_folder = Path(__file__).resolve().parent / "test_sample_data"

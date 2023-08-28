@@ -9,7 +9,13 @@ from bs4 import BeautifulSoup
 
 from src.crawler.cnmv import CNMVCrawler, ContentTypes
 from src.crawler.pipelines import DataTypes
-from tests.test_utils import ATTEMPTS, ENTRY_PAGE1, INITIAL_URL, SAMPLE_FILES
+from tests.test_utils import (
+    ATTEMPTS,
+    ENTRY_PAGE1,
+    ENTRY_PAGE2,
+    INITIAL_URL,
+    SAMPLE_FILES,
+)
 
 
 # pylint: disable=protected-access
@@ -237,3 +243,10 @@ async def test_crawl_and_transform(
 
         assert transformed == await mock_transformed_results()
         assert content == await mock_get_list_content()
+
+
+@pytest.mark.asyncio
+async def test_save_results(cnmv_crawler: CNMVCrawler) -> None:
+    """Test the save_results method inside the crawler"""
+    saved = await cnmv_crawler.save_results([ENTRY_PAGE1, ENTRY_PAGE2])
+    assert saved is True
