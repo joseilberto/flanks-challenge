@@ -40,6 +40,30 @@ ENTRY_PAGE2 = DataTypes(
     "2020-01-01",
 )
 
+# Define the update for the first entry page
+ENTRY_PAGE1_UPDATE1 = DataTypes(
+    "SICAV TEST",
+    "1",
+    "2000-01-01",
+    "ES0000000000",
+    "Calle TEST, 28",
+    1000000.0,
+    10000000.0,
+    "2023-01-01",
+)
+
+# Define the update for the first entry page
+ENTRY_PAGE1_UPDATE2 = DataTypes(
+    "SICAV TEST",
+    "1",
+    "2000-01-01",
+    "ES0000000000",
+    "Calle TEST, 24",
+    2000000.0,
+    20000000.0,
+    "2023-01-20",
+)
+
 sample_test_folder = Path(__file__).resolve().parent / "test_sample_data"
 sample_files = {
     "success_list_page": sample_test_folder / "list_page.html",

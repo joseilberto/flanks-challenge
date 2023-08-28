@@ -53,3 +53,17 @@ class MongoClientBase:
         if query is None:
             query = {}
         return await self.get_collection().count_documents(query)
+
+    async def delete_docs(self, query: Optional[Dict[str, Any]] = None) -> int:
+        """
+        Delete docs from the collection
+
+        If query is unset, all documents will be deleted.
+        """
+        if query is None:
+            query = {}
+        result = await self.get_collection().delete_many(query)
+        assert result.acknowledged
+        delete_count = result.deleted_count
+        self.log.debug("Deleted %s entries", delete_count)
+        return delete_count

@@ -30,5 +30,6 @@ def data_client(mongo_connector: MongoConnector) -> DataClient:
     """Make a DataClient fixture"""
     client = DataClient(db_name=DB_NAME, connector=mongo_connector)
     loop = asyncio.get_event_loop()
+    loop.run_until_complete(client.delete_docs())
     loop.run_until_complete(client.set_index())
     return client

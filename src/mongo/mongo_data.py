@@ -163,7 +163,7 @@ class MongoDataClient(MongoClientBase):
         self.log.debug("Setting data for dictionary: %s", data)
 
         success = await self.get_collection().update_one(
-            query, data, upsert=True
+            query, {"$set": data}, upsert=True
         )
 
         self.log.info(
