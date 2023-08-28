@@ -18,19 +18,19 @@ class DataTypes(NamedTuple):
     numero_registro: str
     fecha_registro: str
     isin: str
-    domicilio: str
-    capital_inicial: float
-    capital_maximo: float
-    fecha_ultimo_folleto: str
+    domicilio: Optional[str] = None
+    capital_inicial: Optional[float] = None
+    capital_maximo: Optional[float] = None
+    fecha_ultimo_folleto: Optional[str] = None
 
 
 THS = {
     "numero_registro": "Nº Registro oficial",
     "fecha_registro": "Fecha registro oficial",
+    "isin": "ISIN",
     "domicilio": "Domicilio",
     "capital_inicial": "Capital social inicial",
     "capital_maximo": "Capital máximo estatutario",
-    "isin": "ISIN",
     "fecha_ultimo_folleto": "Fecha último folleto",
 }
 
@@ -47,7 +47,7 @@ def process_capital(capital: str) -> float:
         return locale.atof(capital)
 
 
-MAPPING: Dict[str, Callable[[str], Union[str, float, datetime]]] = {
+MAPPING: Dict[str, Callable[[str], Union[str, float]]] = {
     "nombre": str,
     "numero_registro": str,
     "fecha_registro": lambda x: datetime.strptime(x, r"%d/%m/%Y").strftime(
@@ -68,9 +68,7 @@ class MongoDataPipeLine:
 
     def __init__(
         self,
-        mapping_functions: Dict[
-            str, Callable[[str], Union[str, float, datetime]]
-        ],
+        mapping_functions: Dict[str, Callable[[str], Union[str, float]]],
     ) -> None:
         """Initialising the variables in our pipeline"""
         self.mapping_functions = mapping_functions
@@ -85,7 +83,7 @@ class MongoDataPipeLine:
         """
         # Get the nombre SICAV
         self.log.debug("Getting nombre in %s", url)
-        result = {"nombre": self.get_nombre(soup)}
+        result = {"nombre": self.get_nombre(url, soup)}
         # Get the data table
         data_table = soup.find("div", {"class": "div_tablaDatos"})
         if not isinstance(data_table, Tag):
@@ -100,10 +98,10 @@ class MongoDataPipeLine:
         self.log.debug(
             "Getting the remaining fields from the data table in %s", url
         )
-        result.update(self.get_data_table_elements(data_table))  # type: ignore
+        result.update(self.get_data_table_elements(url, data_table))  # type: ignore
         return DataTypes(**result)  # type: ignore
 
-    def get_nombre(self, soup: BeautifulSoup) -> str:
+    def get_nombre(self, url: str, soup: BeautifulSoup) -> str:
         """
         Get the nombre SICAV which is in a separate element regarding the
         rest of the fields
@@ -112,7 +110,7 @@ class MongoDataPipeLine:
         nombre_element = soup.find("p", {"class": "titcont"})
         if not isinstance(nombre_element, Tag):
             msg = (
-                "Couldn't find Tag for nombre element, found"
+                f"Couldn't find Tag for nombre element in {url}, found"
                 f" {type(nombre_element)} instead. Ignoring this page."
             )
             self.log.error(msg)
@@ -121,7 +119,7 @@ class MongoDataPipeLine:
         nombre = nombre_element.select_one("span")
         if not isinstance(nombre, Tag):
             msg = (
-                "Couldn't find Tag for nombre, found"
+                f"Couldn't find Tag for nombre in {url}, found"
                 f" {type(nombre)} instead. Ignoring this page."
             )
             self.log.error(msg)
@@ -130,26 +128,38 @@ class MongoDataPipeLine:
         return nombre.text
 
     def get_data_table_elements(
-        self, data_table: Tag
-    ) -> Dict[str, Union[str, float, datetime]]:
+        self, url: str, data_table: Tag
+    ) -> Dict[str, Optional[Union[str, float]]]:
         """Get all elements in the data table"""
-        result = {}
+        result: Dict[str, Optional[Union[str, float]]] = {}
         for field, th_class in THS.items():
             # Get the current element in the table
             element = data_table.find("td", {"data-th": th_class})
             if not isinstance(element, Tag):
                 msg = (
-                    f"Couldn't find Tag for {field}, found"
-                    f" {type(element)} instead. Ignoring this page."
+                    f"Couldn't find Tag for {field} for {url}, found"
+                    f" {type(element)} instead."
                 )
-                self.log.error(msg)
-                raise ValueError(msg)
+                if field not in [
+                    "nombre",
+                    "numero_registro",
+                    "fecha_registro",
+                    "isin",
+                ]:
+                    msg += "Using None value instead."
+                    self.log.warning(msg)
+                    result[field] = None
+                else:
+                    msg += "Key field cannot be None"
+                    self.log.error(msg)
+                    raise ValueError(msg)
+
             # ISIN has a different structure, we check it first
-            if field == "isin":
+            if field == "isin" and isinstance(element, Tag):
                 isin = element.select_one("a")
                 if not isinstance(isin, Tag):
                     msg = (
-                        "Couldn't find Tag for ISIN, found"
+                        "Couldn't find Tag for ISIN for {url}, found"
                         f" {type(isin)} instead. Ignoring this page."
                     )
                     self.log.error(msg)
@@ -157,5 +167,6 @@ class MongoDataPipeLine:
                 result[field] = self.mapping_functions[field](isin.text)
                 continue
             # Process elements
-            result[field] = self.mapping_functions[field](element.text)
+            if element is not None:
+                result[field] = self.mapping_functions[field](element.text)
         return result

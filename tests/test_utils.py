@@ -62,6 +62,13 @@ sample_files = {
     "success_entry1": sample_test_folder / "entry1.html",
     "success_entry2": sample_test_folder / "entry2.html",
     "empty_entry1": sample_test_folder / "entry1_no_tablaDatos.html",
+    "no_titcont_entry1": sample_test_folder / "entry1_no_titcont.html",
+    "no_span_entry1": sample_test_folder / "entry1_no_span.html",
+    "entry1_missing_non_key": (
+        sample_test_folder / "entry1_missing_non_key.html"
+    ),
+    "entry1_missing_key": sample_test_folder / "entry1_missing_key.html",
+    "entry_missing_isin": sample_test_folder / "entry1_missing_isin.html",
 }
 
 SAMPLE_FILES = {}
