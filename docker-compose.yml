@@ -12,7 +12,7 @@ services:
     expose:
       - '27017'
     volumes:
-      - dbdata6:/data/db
+      - mongo_volume:/data/db
     command: mongod --quiet --logpath /dev/null
   tests:
     build:
@@ -33,4 +33,4 @@ networks:
         - subnet: 190.10.0.0/10
 
 volumes:
-  dbdata6:
+  mongo_volume:
