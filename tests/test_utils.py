@@ -1,6 +1,7 @@
 """Setting up variables and methods to help us perform our tests"""
 
 import codecs
+import os
 from pathlib import Path
 
 # pylint: disable=import-error
@@ -9,12 +10,12 @@ from crawler.pipelines import DataTypes
 # Here are some variables we need
 ATTEMPTS = "3"
 ATTEMPT_WAIT = "0"
-DB_NAME = "LOCAL_TEST"
+DB_NAME = os.getenv("DB_NAME", "LOCAL_TEST")
 DELAY = "1"
 INITIAL_URL = "https://localhost/test_url/"
-MONGO_HOST = "127.0.0.1"
-MONGO_PORT = "27017"
-TEST_CRAWLER = "CNMV"
+MONGO_HOST = os.getenv("MONGO_HOST", "127.0.0.1")
+MONGO_PORT = os.getenv("MONGO_PORT", "27017")
+TEST_CRAWLER = os.getenv("TEST_CRAWLER", "CNMV")
 
 # Define the results of the first entry page
 ENTRY_PAGE1 = DataTypes(
