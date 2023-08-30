@@ -29,6 +29,8 @@ black = "^23.7.0"
 mypy = "^1.5.1"
 isort = "^5.12.0"
 
+[tool.poetry.group.dev]
+optional = true
 
 [tool.poetry.group.dev.dependencies]
 pre-commit = "^3.3.3"
