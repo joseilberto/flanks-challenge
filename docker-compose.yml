@@ -4,10 +4,18 @@ version: '3.1'
 services:
   mongo:
     image: mongo:4.4.20-focal
+    networks:
+      - main
+    # expose is informative, all services in this network are going to see 
+    # this port anyway  
     expose:
       - '27017'
     volumes:
       - dbdata6:/data/db
+
+networks:
+  main:
+
 
 volumes:
   dbdata6:
