@@ -1,21 +1,36 @@
 # Use root/example as user/password credentials
 version: '3.1'
 
+# exposing ports is informative, all services in this network are going to see 
+# the exposed ports anyway
 services:
   mongo:
     image: mongo:4.4.20-focal
     networks:
-      - main
-    # expose is informative, all services in this network are going to see 
-    # this port anyway  
+      main:
+        ipv4_address: 190.10.0.0
     expose:
       - '27017'
     volumes:
       - dbdata6:/data/db
+    command: mongod --quiet --logpath /dev/null
+  tests:
+    build:
+      context: ./
+      dockerfile: Dockerfile-tests
+    image: test_image
+    networks:
+      - main
+    command: poetry run coverage run -m pytest tests
+    container_name: test_container
+    environment:
+      - MONGO_HOST=190.10.0.0
 
 networks:
   main:
-
+    ipam:
+      config:
+        - subnet: 190.10.0.0/10
 
 volumes:
   dbdata6:

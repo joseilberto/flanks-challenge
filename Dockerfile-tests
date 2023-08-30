@@ -1,0 +1,46 @@
+# Use a python slim version
+FROM python:3.11-slim
+
+# Set utf-8 encoding for Python by default
+ENV LANG C.UTF-8
+# Speed stdout and stderr up when running python routines.
+ENV PYTHONUNBUFFERED 1
+# No need for the pip warning
+ENV PIP_DISABLE_PIP_VERSION_CHECK 1
+
+# Create a virtual environment for the python dependencies, and set variables
+# so it's always active.
+ENV VIRTUAL_ENV /virtual_env
+RUN python -m venv $VIRTUAL_ENV
+ENV PATH "$VIRTUAL_ENV/bin:$PATH"
+
+# Install OS package dependencies.
+# Do all of this in one RUN to limit final image size.
+RUN apt-get update -y \
+    && apt-get install -y --no-install-recommends locales \
+    build-essential curl \
+    && rm -rf /var/lib/apt/lists/*
+
+# Uncomment locales from the new /local
+
+RUN sed -i -e 's/# en_US.UTF-8 UTF-8/en_US.UTF-8 UTF-8/' /etc/locale.gen \
+    && sed -i -e 's/# es_ES.UTF-8 UTF-8/es_ES.UTF-8 UTF-8/' /etc/locale.gen \
+    && dpkg-reconfigure --frontend=noninteractive locales    
+
+# Setting up locale variables
+ENV LC_NUMERIC en_US.utf8
+ENV LC_NUMERIC es_ES.utf8
+
+# Copy poetry files from host to container
+WORKDIR /crawlers
+COPY pyproject.toml /crawlers/pyproject.toml
+COPY poetry.lock /crawlers/poetry.lock
+
+# Install poetry and package dependencies
+RUN curl -sSL https://install.python-poetry.org | python3 -
+ENV PATH="/root/.local/bin:${PATH}"
+RUN . $VIRTUAL_ENV/bin/activate && poetry install --no-root
+
+# # Copy folders from host to container
+COPY src/ /crawlers/src/
+COPY tests/ /crawlers/tests/
