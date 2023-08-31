@@ -1,5 +1,5 @@
 # Use root/example as user/password credentials
-version: '3.1'
+version: '3.8'
 
 # exposing ports is informative, all services in this network are going to see 
 # the exposed ports anyway
@@ -15,6 +15,12 @@ services:
       - mongo_volume:/data/db
     command: mongod --quiet --logpath /dev/null
     container_name: mongo_container
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok' | mongo mongo:27017/test --quiet
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 0s
   tests:
     build:
       context: ./
@@ -22,10 +28,27 @@ services:
     image: crawler
     networks:
       - main
+    depends_on:
+      mongo:
+        condition: service_healthy
+
     command: poetry run coverage run -m pytest tests
     container_name: test_container
     environment:
       - MONGO_HOST=190.10.0.0
+  cnmv_crawler:
+    image: crawler
+    networks:
+      - main
+    depends_on:
+      mongo:
+        condition: service_healthy
+      tests:
+        condition: service_completed_successfully
+    command: python src/run_cnmv_crawler.py
+    environment:
+      - MONGO_HOST=190.10.0.0
+    container_name: cnmv_crawler_container
 
 networks:
   main:
