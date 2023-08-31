@@ -3,10 +3,22 @@ A local testing script to run the crawler and save the data in MONGO
 """
 
 import asyncio
+import logging
+import sys
 from typing import no_type_check
 
 from crawler import MAPPING, CNMVCrawler, DataPipeline
 from mongo import DataClient
+
+logging.basicConfig(
+    format=(
+        "%(asctime)s.%(msecs)03dZ %(levelname)-8s "
+        "(%(name)s %(funcName)s): %(message)s"
+    ),
+    datefmt="%Y-%m-%dT%H:%M:%S",
+    stream=sys.stdout,
+    level=logging.INFO,
+)
 
 
 @no_type_check

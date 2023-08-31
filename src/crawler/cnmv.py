@@ -223,7 +223,7 @@ class CNMVCrawler:
         """
         Crawl the process getting the required data
         """
-        self.log.info("Crawling: %s", url)
+        self.log.debug("Crawling: %s", url)
         attempt = 1
         while attempt < attempts:
             async with session.get(url) as response:
