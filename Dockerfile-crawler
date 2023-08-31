@@ -39,7 +39,7 @@ COPY poetry.lock /crawlers/poetry.lock
 # Install poetry and package dependencies
 RUN curl -sSL https://install.python-poetry.org | python3 -
 ENV PATH="/root/.local/bin:${PATH}"
-RUN . $VIRTUAL_ENV/bin/activate && poetry install --no-root
+RUN . $VIRTUAL_ENV/bin/activate && poetry install --no-root --with test
 
 # # Copy folders from host to container
 COPY src/ /crawlers/src/

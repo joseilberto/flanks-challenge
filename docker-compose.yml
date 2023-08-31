@@ -14,11 +14,12 @@ services:
     volumes:
       - mongo_volume:/data/db
     command: mongod --quiet --logpath /dev/null
+    container_name: mongo_container
   tests:
     build:
       context: ./
-      dockerfile: Dockerfile-tests
-    image: test_image
+      dockerfile: Dockerfile-crawler
+    image: crawler
     networks:
       - main
     command: poetry run coverage run -m pytest tests
