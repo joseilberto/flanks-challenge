@@ -21,7 +21,7 @@ RUN apt-get update -y \
     build-essential curl \
     && rm -rf /var/lib/apt/lists/*
 
-# Uncomment locales from the new /local
+# Uncomment locales from the /etc/locale.gen
 
 RUN sed -i -e 's/# en_US.UTF-8 UTF-8/en_US.UTF-8 UTF-8/' /etc/locale.gen \
     && sed -i -e 's/# es_ES.UTF-8 UTF-8/es_ES.UTF-8 UTF-8/' /etc/locale.gen \
