@@ -4,7 +4,6 @@ version = "0.1.0"
 description = "Python dependencies for the project"
 authors = ["Jose Fonceca <ilbertofjunior@gmail.com>"]
 readme = "README.md"
-packages = [{ include = "flanks_challenge" }]
 
 [tool.poetry.dependencies]
 python = "^3.10"
