@@ -251,7 +251,8 @@ class CNMVCrawler:
         """
         Crawl and save all the results in the database
         """
-        async with aiohttp.ClientSession() as session:
+        connector = aiohttp.TCPConnector(force_close=True)
+        async with aiohttp.ClientSession(connector=connector) as session:
             next_page = INITIAL_URL
             while True:
                 results, content = await self.crawl_and_transform(
