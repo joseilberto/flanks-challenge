@@ -49,6 +49,8 @@ services:
     environment:
       - MONGO_HOST=190.10.0.0
     container_name: cnmv_crawler_container
+    volumes:
+      - crawler_logs:/cnmv
 
 networks:
   main:
@@ -58,3 +60,4 @@ networks:
 
 volumes:
   mongo_volume:
+  crawler_logs:
