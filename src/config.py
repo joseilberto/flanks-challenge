@@ -27,3 +27,7 @@ DELAY = int(os.getenv("DELAY", "1"))
 # Mongo connection information
 MONGO_HOST = os.getenv("MONGO_HOST", "localhost")
 MONGO_PORT = os.getenv("MONGO_PORT", "27017")
+
+# Service config
+SERVICE_HOST = os.getenv("SERVICE_HOST", "localhost")
+SERVICE_PORT = os.getenv("SERVICE_PORT", "8080")
