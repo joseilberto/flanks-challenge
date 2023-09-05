@@ -72,6 +72,18 @@ class MongoDataClient(MongoClientBase):
         )
         return document
 
+    async def find_entries(
+        self, query: Dict[str, Union[str, List[str]]]
+    ) -> List[DocumentType]:
+        """Find entries matching the desired query"""
+        proj = {"_id": 0}
+        results: List[DocumentType] = []
+        cursor = self.get_collection().find(query, proj)
+        async for document in cursor:
+            if document is not None:
+                results.append(document)
+        return results
+
     async def set_data(self, result: DataTypes) -> bool:
         """
         Set the data for a particular entry
