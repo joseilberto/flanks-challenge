@@ -27,16 +27,15 @@ class SearchHandler:
         fecha_registro: Optional[Union[str, List[str]]] = None,
     ) -> List[DocumentType]:
         """Get method for searching an entry with given search parameters"""
-        query: Dict[str, Union[str, List[str]]] = {}
         query_elements: List[Tuple[str, Optional[Union[str, List[str]]]]] = [
             ("isin", isin),
             ("numero_registro", numero_registro),
             ("nombre", nombre),
             ("fecha_registro", fecha_registro),
         ]
-        for key, value in query_elements:
-            if value is not None:
-                query[key] = value
+        query: Dict[str, Union[str, List[str]]] = {
+            key: value for key, value in query_elements if value is not None
+        }
         if not query:
             self.log.error("The request received has no search parameters.")
             return []
