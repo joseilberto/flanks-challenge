@@ -4,7 +4,7 @@ CNMV crawler class with all the methods we need to crawl the CNMV listing page
 
 import asyncio
 import logging
-from typing import List, NamedTuple, Optional, Tuple, Union
+from typing import List, Optional, Tuple, Union
 from urllib.parse import urljoin, urlparse
 
 import aiohttp
@@ -12,18 +12,10 @@ from bs4 import BeautifulSoup
 from bs4.element import Tag
 
 from config import ATTEMPT_WAIT, ATTEMPTS, DELAY, INITIAL_URL
+from data_classes import ContentTypes, DataTypes
 from mongo import DataClient
 
-from .pipelines import DataTypes, MongoDataPipeLine
-
-
-class ContentTypes(NamedTuple):
-    """
-    Named tuple for the content of each pagination
-    """
-
-    next_page: str = ""
-    urls: List[str] = []
+from .pipelines import MongoDataPipeLine
 
 
 class CNMVCrawler:

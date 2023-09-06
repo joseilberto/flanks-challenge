@@ -2,32 +2,14 @@
 
 import logging
 from datetime import datetime
-from typing import Dict, List, Optional, TypedDict, Union, Unpack
+from typing import Dict, List, Optional, Union, Unpack
 
 from pymongo import ASCENDING
 from pymongo.operations import IndexModel
 
-from crawler.pipelines import DataTypes
+from data_classes import DataTypes, DocumentType
 
 from .mongo_client_base import ClientParams, MongoClientBase
-
-
-class DocumentType(TypedDict):
-    """
-    Document entry type for the database
-    """
-
-    nombre: str
-    numero_registro: str
-    fecha_registro: str
-    isin: str
-    domicilio: str
-    capital_inicial: float
-    capital_maximo: float
-    fecha_ultimo_folleto: str
-    last_update: str
-    write_date: datetime
-    updates: Dict[str, Dict[str, Union[str, float]]]
 
 
 class MongoDataClient(MongoClientBase):

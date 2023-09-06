@@ -5,24 +5,12 @@ Pipelines to transform the raw data found into mongoDB types
 import locale
 import logging
 from datetime import datetime
-from typing import Callable, Dict, NamedTuple, Optional, Union
+from typing import Callable, Dict, Optional, Union
 
 from bs4 import BeautifulSoup
 from bs4.element import Tag
 
-
-class DataTypes(NamedTuple):
-    """NamedTuple for the MongoClientBase params"""
-
-    nombre: str
-    numero_registro: str
-    fecha_registro: str
-    isin: str
-    domicilio: Optional[str] = None
-    capital_inicial: Optional[float] = None
-    capital_maximo: Optional[float] = None
-    fecha_ultimo_folleto: Optional[str] = None
-
+from data_classes import DataTypes
 
 THS = {
     "numero_registro": "Nº Registro oficial",
