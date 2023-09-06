@@ -3,21 +3,21 @@
 import logging
 from typing import Dict, List, Optional, Tuple, Union
 
+from sanic.views import HTTPMethodView
+
+from config import DB_NAME
 from data_classes import DocumentType, QueryDict
 from mongo import DataClient
 
+mongo_client = DataClient(db_name=DB_NAME, collection=None, connector=None)
 
-class SearchHandler:
+
+class SearchHandler(HTTPMethodView):
     # pylint: disable=too-few-public-methods
     """A handler to list elements according to the search key provided"""
-
-    def __init__(self, mongo_client: DataClient) -> None:
-        """
-        Initialise the class
-        """
-        self.log = logging.getLogger(__name__)
-        self.log.info("Initialising the SearchHandler")
-        self.mongo_client = mongo_client
+    log = logging.getLogger(__name__)
+    log.info("Initialising the SearchHandler")
+    mongo_client = mongo_client
 
     def _format_query(self, query: QueryDict, mode: str = "$gte") -> None:
         """Format the query to unest list and create upper and lower limits"""
@@ -66,6 +66,7 @@ class SearchHandler:
         fecha_registro: Optional[Union[str, List[str]]] = None,
     ) -> List[DocumentType]:
         """Get method for searching an entry with given search parameters"""
+        self.log.info(isin)
         query_elements: List[
             Tuple[str, Optional[Union[str, List[str], Dict[str, str]]]]
         ] = [

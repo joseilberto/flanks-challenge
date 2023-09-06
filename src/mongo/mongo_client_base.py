@@ -14,7 +14,7 @@ class ClientParams(TypedDict):
     """TypeDict for the MongoClientBase params"""
 
     db_name: str
-    collection: str
+    collection: Optional[str]
     connector: Optional[MongoConnector]
 
 
