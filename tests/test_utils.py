@@ -5,7 +5,7 @@ import os
 from pathlib import Path
 
 # pylint: disable=import-error
-from crawler.pipelines import DataTypes
+from data_classes import DataTypes
 
 # Here are some variables we need
 ATTEMPTS = "3"

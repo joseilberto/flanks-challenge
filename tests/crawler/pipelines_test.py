@@ -3,7 +3,8 @@
 import pytest
 from bs4 import BeautifulSoup
 
-from src.crawler.pipelines import DataTypes, MongoDataPipeLine, process_capital
+from src.crawler.pipelines import MongoDataPipeLine, process_capital
+from src.data_classes import DataTypes
 from tests.test_utils import ENTRY_PAGE1, SAMPLE_FILES
 
 

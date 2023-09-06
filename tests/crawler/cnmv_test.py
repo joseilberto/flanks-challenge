@@ -7,8 +7,8 @@ import aiohttp
 import pytest
 from bs4 import BeautifulSoup
 
-from src.crawler.cnmv import CNMVCrawler, ContentTypes
-from src.crawler.pipelines import DataTypes
+from src.crawler.cnmv import CNMVCrawler
+from src.data_classes import ContentTypes, DataTypes
 from tests.test_utils import (
     ATTEMPTS,
     ENTRY_PAGE1,
