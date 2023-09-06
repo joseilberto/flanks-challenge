@@ -1,7 +1,9 @@
 """File containing all the model data classes we need"""
 
 from datetime import datetime
-from typing import Dict, List, NamedTuple, Optional, TypedDict, Union
+from typing import Dict, List, NamedTuple, Optional, TypeAlias, TypedDict, Union
+
+QueryDict: TypeAlias = Dict[str, Union[str, List[str], Dict[str, str]]]
 
 
 class ContentTypes(NamedTuple):

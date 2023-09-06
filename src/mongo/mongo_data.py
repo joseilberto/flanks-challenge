@@ -2,12 +2,12 @@
 
 import logging
 from datetime import datetime
-from typing import Dict, List, Optional, Union, Unpack
+from typing import Dict, List, Optional, Unpack
 
 from pymongo import ASCENDING
 from pymongo.operations import IndexModel
 
-from data_classes import DataTypes, DocumentType
+from data_classes import DataTypes, DocumentType, QueryDict
 
 from .mongo_client_base import ClientParams, MongoClientBase
 
@@ -54,9 +54,7 @@ class MongoDataClient(MongoClientBase):
         )
         return document
 
-    async def find_entries(
-        self, query: Dict[str, Union[str, List[str]]]
-    ) -> List[DocumentType]:
+    async def find_entries(self, query: QueryDict) -> List[DocumentType]:
         """Find entries matching the desired query"""
         proj = {"_id": 0}
         results: List[DocumentType] = []
