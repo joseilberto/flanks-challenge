@@ -30,5 +30,5 @@ MONGO_PORT = os.getenv("MONGO_PORT", "27017")
 
 # Service config
 SERVICE_HOST = os.getenv("SERVICE_HOST", "localhost")
-SERVICE_PORT = os.getenv("SERVICE_PORT", "8080")
+SERVICE_PORT = int(os.getenv("SERVICE_PORT", "8080"))
 DB_NAME = os.getenv("DB_NAME", "CNMV")
