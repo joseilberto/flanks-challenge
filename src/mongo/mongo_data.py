@@ -61,6 +61,7 @@ class MongoDataClient(MongoClientBase):
         cursor = self.get_collection().find(query, proj)
         async for document in cursor:
             if document is not None:
+                document["write_date"] = document["write_date"].isoformat()
                 results.append(document)
         return results
 

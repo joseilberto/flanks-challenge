@@ -1,13 +1,16 @@
 """A listing handler able to list data using different keys"""
 
-import logging
 from typing import Dict, List, Optional, Tuple, Union
 
+from sanic.log import logger
+from sanic.response import JSONResponse, json
 from sanic.views import HTTPMethodView
 
 from config import DB_NAME
-from data_classes import DocumentType, QueryDict
+from data_classes import QueryDict
 from mongo import DataClient
+
+from .utils import async_request_params
 
 mongo_client = DataClient(db_name=DB_NAME, collection=None, connector=None)
 
@@ -15,7 +18,7 @@ mongo_client = DataClient(db_name=DB_NAME, collection=None, connector=None)
 class SearchHandler(HTTPMethodView):
     # pylint: disable=too-few-public-methods
     """A handler to list elements according to the search key provided"""
-    log = logging.getLogger(__name__)
+    log = logger
     log.info("Initialising the SearchHandler")
     mongo_client = mongo_client
 
@@ -58,15 +61,15 @@ class SearchHandler(HTTPMethodView):
                 self.log.error(msg)
                 raise ValueError(msg)
 
+    @async_request_params  # type: ignore
     async def get(
         self,
         isin: Optional[Union[str, List[str]]] = None,
         numero_registro: Optional[Union[str, List[str]]] = None,
         nombre: Optional[str] = None,
         fecha_registro: Optional[Union[str, List[str]]] = None,
-    ) -> List[DocumentType]:
+    ) -> JSONResponse:
         """Get method for searching an entry with given search parameters"""
-        self.log.info(isin)
         query_elements: List[
             Tuple[str, Optional[Union[str, List[str], Dict[str, str]]]]
         ] = [
@@ -80,8 +83,9 @@ class SearchHandler(HTTPMethodView):
         }
         if not query:
             self.log.error("The request received has no search parameters.")
-            return []
+            return json([])
         self._format_query(query)
         msg = f"Searching in the database using the parameters: {query}"
         self.log.info(msg)
-        return await self.mongo_client.find_entries(query)
+        results = await self.mongo_client.find_entries(query)
+        return json(results)
