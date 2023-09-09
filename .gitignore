@@ -4,3 +4,4 @@
 type_hint*/
 *.pyc
 .coverage*
+*.log
