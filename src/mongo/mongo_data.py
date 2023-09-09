@@ -58,7 +58,8 @@ class MongoDataClient(MongoClientBase):
         """Find entries matching the desired query"""
         proj = {"_id": 0}
         results: List[DocumentType] = []
-        cursor = self.get_collection().find(query, proj)
+        sort = [(key, ASCENDING) for key in query.keys()]
+        cursor = self.get_collection().find(query, proj, sort=sort)
         async for document in cursor:
             if document is not None:
                 document["write_date"] = document["write_date"].isoformat()
