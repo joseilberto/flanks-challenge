@@ -44,3 +44,14 @@ class DocumentType(TypedDict):
     last_update: str
     write_date: datetime
     updates: Dict[str, Dict[str, Union[str, float]]]
+
+
+class KeyDocumentType(TypedDict):
+    """
+    Key document entry type for the database
+    """
+
+    nombre: str
+    numero_registro: str
+    fecha_registro: str
+    isin: str
