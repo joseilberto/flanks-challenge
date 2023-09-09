@@ -27,14 +27,13 @@ class InfoHandler(HTTPMethodView):
     ) -> Optional[DocumentType]:
         # pylint: disable=unused-argument
         """Get method for searching an entry with given search parameters"""
-        if isin is None:
+        if isin is None or isin == "":
             self.log.error("The request didn't received an ISIN value.")
             return None
         try:
             isin = str(isin)
         except ValueError:
-            msg = "ISIN value cannot be converted to string"
-            self.log.error(msg)
+            self.log.error("ISIN value cannot be converted to string")
             return None
         query: QueryDict = {"isin": isin}
         msg = f"Listing ISIN {isin} data"
