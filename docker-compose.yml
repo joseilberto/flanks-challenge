@@ -8,9 +8,11 @@ services:
     image: mongo:4.4.20-focal
     networks:
       main:
-        ipv4_address: 190.10.0.0
+        ipv4_address: 190.20.0.0
     expose:
       - '27017'
+    ports:
+      - '37017:27017'
     volumes:
       - mongo_volume:/data/db
     command: mongod --quiet --logpath /dev/null
@@ -21,43 +23,32 @@ services:
       timeout: 5s
       retries: 3
       start_period: 0s
-  tests:
+  cnmv_crawler:
     build:
       context: ./
-      dockerfile: Dockerfile-crawler
-    image: crawler
+      dockerfile: Dockerfile
+    image: cnmv_service
     networks:
       - main
+    ports:
+      - '8081:8080'
     depends_on:
       mongo:
         condition: service_healthy
-
-    command: poetry run coverage run -m pytest tests
-    container_name: test_container
+    command: python src/service.py
     environment:
-      - MONGO_HOST=190.10.0.0
-  cnmv_crawler:
-    image: crawler
-    networks:
-      - main
-    depends_on:
-      mongo:
-        condition: service_healthy
-      tests:
-        condition: service_completed_successfully
-    command: python src/run_cnmv_crawler.py
-    environment:
-      - MONGO_HOST=190.10.0.0
-    container_name: cnmv_crawler_container
+      - MONGO_HOST=190.20.0.0
+      - SERVICE_HOST=0.0.0.0
+    container_name: cnmv_service_container
     volumes:
-      - crawler_logs:/cnmv
+      - cnmv_logs:/cnmv
 
 networks:
   main:
     ipam:
       config:
-        - subnet: 190.10.0.0/10
+        - subnet: 190.20.0.0/10
 
 volumes:
   mongo_volume:
-  crawler_logs:
+  cnmv_logs:
