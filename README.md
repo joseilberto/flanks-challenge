@@ -81,7 +81,8 @@ docker-compose -f docker-compose_crawler.yml up
 - [Archivo Compose para el servicio](https://github.com/joseilberto/flanks-challenge/blob/main/docker-compose.yml): Ejecuta el servicio dentro de un contenedor Docker y nos permite utilizar los datos disponibles en MongoDB sin exponerlos directamente al host. Su estructura es la siguiente:
 
 - 1\. Contenedor con MongoDB: Tiene las mismas características del contenedor para MongoDB del crawler, sin embargo está configurado en la dirección `190.20.0.0:27017` de la red local.
-- 2\. Contenedor del servicio: Este contenedor ejecuta el servicio que está desarrollado con el [marco web sanic](https://sanic.dev/en/guide/). El contenedor depende de la correcta inicialización del contenedor con MongoDB. Al inicializar, se ejecuta el script del servicio que corre continuamente hasta que paremos su ejecución manualmente. El contenedor expone el puerto `8080` de la red local (en el cual el servicio recibe peticiones) al puerto `8081` del host. El servicio contiene dos endpoints que poseen los siguientes métodos:
+- 2\. Contenedor del servicio: Este contenedor ejecuta el servicio que está desarrollado con el [marco web sanic](https://sanic.dev/en/guide/). El contenedor depende de la correcta inicialización del contenedor con MongoDB. Al inicializar, se ejecuta el script del servicio que corre continuamente hasta que paremos su ejecución manualmente.
+El contenedor expone el puerto `8080` de la red local (en el cual el servicio recibe peticiones) al puerto `8081` del host. El servicio contiene dos endpoints que poseen los siguientes métodos:
 
   - 2.1\.: `/search`
 
@@ -90,6 +91,8 @@ docker-compose -f docker-compose_crawler.yml up
 - 2.2\.: `isin_info`
 
   - 2.2.1\.: `GET`: Recibe el valor ISIN de una SICAV y devuelve un json conteniendo toda la información de esta SICAV. Se espera que el parámetro `isin` de la petición tenga un formato que se pueda convertir a string. Solo se permite buscar una SICAV a la vez.
+
+El servicio se basa en una arquitectura REST y la utilización de los métodos `GET` en las peticiones se justifican por la naturaleza [segura e idempotente](https://restfulapi.net/idempotent-rest-apis/) de las peticiones que necesitamos en la API desarrollada.
 
 La ejecución de este archivo compose se hace desde la carpeta del proyecto con el siguiente comando:
 
