@@ -11,8 +11,6 @@ services:
         ipv4_address: 190.20.0.0
     expose:
       - '27017'
-    ports:
-      - '37017:27017'
     volumes:
       - mongo_volume:/data/db
     command: mongod --quiet --logpath /dev/null
@@ -23,7 +21,7 @@ services:
       timeout: 5s
       retries: 3
       start_period: 0s
-  cnmv_crawler:
+  cnmv_service:
     build:
       context: ./
       dockerfile: Dockerfile
