@@ -45,7 +45,7 @@ services:
         condition: service_healthy
       tests:
         condition: service_completed_successfully
-    command: python src/run_cnmv_crawler.py && cp /crawlers/src/*.log /cnmv/
+    command: python src/run_cnmv_crawler.py ; cp /crawlers/src/*.log /cnmv/
     environment:
       - MONGO_HOST=190.10.0.0
     container_name: cnmv_crawler_container
